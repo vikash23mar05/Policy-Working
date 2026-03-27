@@ -4,13 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Analytics Command — Ward-Wise Intelligence</title>
+    <title>Analytics View - Data Analysts</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;600&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="../authority-theme.css" />
 
     <script>
         tailwind.config = {
@@ -18,28 +22,60 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary":          "#ff4500",
-                        "primary-dim":      "#ad2c00",
-                        "background-dark":  "#0d131f",
-                        "surface-dark":     "#111927",
-                        "border-dark":      "#1e2d42",
-                        "accent-orange":    "#f97316",
-                        "accent-lime":      "#22c55e",
-                        "accent-red":       "#ef4444",
+                        "primary": "#00cbe6",
+                        "background-light": "#f1f4f4",
+                        "background-dark": "#132729",
+                        "surface-dark": "#293839",
+                        "border-dark": "#475051",
+                        "accent-orange": "#fa5c38",
+                        "accent-lime": "#0bda54"
                     },
                     fontFamily: {
                         "display": ["Space Grotesk", "sans-serif"],
-                        "sans":    ["Space Grotesk", "sans-serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
                     },
-                    borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
                 },
             },
         }
     </script>
-    <style>/* Styles provided by authority-theme.css */</style>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .grid-bg {
+            background-image: radial-gradient(rgba(71, 80, 81, 0.2) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .confidence-band {
+            fill: rgba(0, 203, 230, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-active {
+            background-color: #293839;
+            border-left-width: 4px;
+            border-color: #00cbe6;
+            color: white;
+        }
+
+        .tab-inactive {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .tab-inactive:hover {
+            color: white;
+        }
+    </style>
 </head>
 
-<body class="bg-background-dark text-white min-h-screen grid-bg overflow-hidden">
+<body
+    class="bg-background-light dark:bg-background-dark font-sans text-slate-900 dark:text-slate-100 min-h-screen grid-bg overflow-hidden">
 
     <!-- Preloader Removed -->
 
@@ -232,20 +268,33 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="w-full relative" style="height:340px">
-                            <canvas id="aqi-trend-chart" class="w-full h-full"></canvas>
-                            <!-- Axis Labels (injected by JS) -->
-                            <div id="aqi-chart-x-axis" class="flex justify-between pt-2 text-[10px] font-bold text-white/40 uppercase tracking-widest"></div>
-                            <!-- Y axis labels -->
-                            <div class="absolute left-0 top-0 h-[300px] flex flex-col justify-between pointer-events-none">
-                                <span class="text-[9px] text-white/30 font-mono">500</span>
-                                <span class="text-[9px] text-white/30 font-mono">300</span>
-                                <span class="text-[9px] text-white/30 font-mono">150</span>
-                                <span class="text-[9px] text-white/30 font-mono">50</span>
-                                <span class="text-[9px] text-white/30 font-mono">0</span>
+                        <div class="w-full h-[320px] relative">
+                            <!-- SVG Chart Simulation -->
+                            <svg class="w-full h-full" viewbox="0 0 800 300">
+                                <!-- Grid lines -->
+                                <line stroke="#475051" stroke-dasharray="4" x1="0" x2="800" y1="50" y2="50"></line>
+                                <line stroke="#475051" stroke-dasharray="4" x1="0" x2="800" y1="150" y2="150"></line>
+                                <line stroke="#475051" stroke-dasharray="4" x1="0" x2="800" y1="250" y2="250"></line>
+                                <!-- Confidence Band Area -->
+                                <path class="confidence-band"
+                                    d="M0 160 Q 100 120, 200 150 T 400 100 T 600 140 T 800 90 V 130 T 600 180 T 400 140 T 200 190 T 0 200 Z">
+                                </path>
+                                <!-- Main Data Line -->
+                                <path d="M0 180 Q 100 140, 200 170 T 400 120 T 600 160 T 800 110" fill="none"
+                                    stroke="#00cbe6" stroke-width="3"></path>
+                                <!-- Ward 2 Line -->
+                                <path d="M0 220 Q 150 180, 300 210 T 500 160 T 800 180" fill="none" stroke="#9ab8bc"
+                                    stroke-opacity="0.4" stroke-width="2"></path>
+                            </svg>
+                            <!-- Axis Labels -->
+                            <div
+                                class="flex justify-between pt-4 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                                <span>01 Oct</span>
+                                <span>07 Oct</span>
+                                <span>14 Oct</span>
+                                <span>21 Oct</span>
+                                <span>28 Oct</span>
                             </div>
-                            <!-- Live Timestamp -->
-                            <div class="absolute top-2 right-0 text-[9px] text-white/30 font-mono" id="chart-updated-at"></div>
                         </div>
                     </section>
 
@@ -606,213 +655,11 @@
         </div>
     </div>
 
-    <script src="../authority-sync.js"></script>
     <script>
-        // Real-time Data Sync Integration
-        window.onAuthorityDataUpdate = function(wards) {
-            console.log('📊 Updating Analytics Dashboard with real-time ward data');
-            const stats = AuthoritySync.getStats();
-            
-            // Update Anomaly KPI
-            const anomalyCount = wards.filter(w => w.status === 'SEVERE' || w.status === 'CRITICAL').length;
-            const criticalCount = wards.filter(w => w.status === 'CRITICAL').length;
-            const kpiCards = document.querySelectorAll('.bg-surface-dark.p-6.rounded-lg.border.border-border-dark');
-            if (kpiCards[2]) {
-              const el = kpiCards[2].querySelector('.text-3xl');
-              const sub = kpiCards[2].querySelector('.text-accent-orange');
-              if (el) el.innerHTML = `${anomalyCount} <span class="text-sm font-normal text-white/40 uppercase">Detected</span>`;
-              if (sub) sub.innerHTML = `<span class="material-symbols-outlined text-sm">priority_high</span> Critical: ${criticalCount.toString().padStart(2, '0')}`;
-            }
-
-            // Refresh Map
-            if (map && wardGeoLayer) {
-                wardGeoLayer.setStyle((feature) => {
-                    const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                    const aqi = wardData ? wardData.aqi : 150;
-                    const color = AuthoritySync.getAQIColor(aqi);
-                    feature.properties.aqi = aqi;
-                    return { fillColor: color, weight: 1, opacity: 1, color: 'white', dashArray: '3', fillOpacity: 0.6 };
-                });
-            }
-
-            // Draw the live AQI Trend Chart
-            drawAQIChart(wards);
-        };
-
-        function drawAQIChart(wards) {
-            const canvas = document.getElementById('aqi-trend-chart');
-            if (!canvas) return;
-
-            const parent = canvas.parentElement;
-            canvas.width = parent.clientWidth || 900;
-            canvas.height = 300;
-            const ctx = canvas.getContext('2d');
-            const W = canvas.width;
-            const H = canvas.height;
-            const PADDING = { top: 20, right: 20, bottom: 10, left: 36 };
-            const chartW = W - PADDING.left - PADDING.right;
-            const chartH = H - PADDING.top - PADDING.bottom;
-
-            ctx.clearRect(0, 0, W, H);
-
-            // --- Generate realistic 30-day data from ward trendHistory seeded by current AQI ---
-            const numDays = 30;
-            const avgAqi = Math.round(wards.reduce((s, w) => s + w.aqi, 0) / Math.max(1, wards.length));
-            const topWard = [...wards].sort((a, b) => b.aqi - a.aqi)[0];
-            const topAqi = topWard ? topWard.aqi : avgAqi + 80;
-
-            // Build plausible 30-day trend ending at today's real AQI
-            function buildTrend(endValue, volatility) {
-                const pts = [];
-                let v = endValue * 0.75 + (Math.random() - 0.5) * 40;
-                for (let i = 0; i < numDays; i++) {
-                    const progress = i / numDays;
-                    const target = endValue * 0.75 + (endValue - endValue * 0.75) * progress;
-                    v = v * 0.7 + target * 0.3 + (Math.random() - 0.5) * volatility;
-                    pts.push(Math.max(20, Math.round(v)));
-                }
-                pts[pts.length - 1] = endValue; // Pin last point to real current value
-                return pts;
-            }
-
-            const avgTrend = buildTrend(avgAqi, 25);
-            const topTrend = buildTrend(topAqi, 40);
-
-            // --- Generate x-axis dates: last 30 days ---
-            const today = new Date();
-            const dateLabels = [];
-            for (let i = numDays - 1; i >= 0; i--) {
-                const d = new Date(today);
-                d.setDate(today.getDate() - i);
-                dateLabels.push(d);
-            }
-
-            // Update x-axis labels in DOM (show 5 evenly spaced)
-            const axisEl = document.getElementById('aqi-chart-x-axis');
-            if (axisEl) {
-                const indices = [0, 7, 14, 21, 29];
-                axisEl.innerHTML = indices.map(i => {
-                    const d = dateLabels[i];
-                    return `<span>${d.getDate().toString().padStart(2,'0')} ${d.toLocaleString('en',{month:'short'}).toUpperCase()}</span>`;
-                }).join('');
-            }
-
-            // Update timestamp
-            const tsEl = document.getElementById('chart-updated-at');
-            if (tsEl) tsEl.innerText = 'LIVE · ' + new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
-
-            // --- AQI scale: 0-500 maps to chartH-0 ---
-            const MAX_AQI = 500;
-            function aqiToY(aqi) {
-                return PADDING.top + chartH - (aqi / MAX_AQI) * chartH;
-            }
-            function dayToX(i) {
-                return PADDING.left + (i / (numDays - 1)) * chartW;
-            }
-
-            // --- Draw grid lines & AQI levels ---
-            const gridLevels = [50, 150, 300, 500];
-            const gridColors = ['#22c55e33', '#f9731633', '#ef444433', '#7f1d1d33'];
-            gridLevels.forEach((level, gi) => {
-                const y = aqiToY(level);
-                ctx.beginPath();
-                ctx.setLineDash([4, 6]);
-                ctx.strokeStyle = '#ffffff18';
-                ctx.lineWidth = 1;
-                ctx.moveTo(PADDING.left, y);
-                ctx.lineTo(W - PADDING.right, y);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            });
-
-            // --- Shaded AQI zone bands (Good/Moderate/Poor) ---
-            const zones = [
-                { from: 0,   to: 50,  color: 'rgba(34,197,94,0.06)' },
-                { from: 50,  to: 150, color: 'rgba(249,115,22,0.06)' },
-                { from: 150, to: 300, color: 'rgba(239,68,68,0.07)' },
-                { from: 300, to: 500, color: 'rgba(127,29,29,0.09)' },
-            ];
-            zones.forEach(z => {
-                ctx.fillStyle = z.color;
-                const y1 = aqiToY(z.to);
-                const y2 = aqiToY(z.from);
-                ctx.fillRect(PADDING.left, y1, chartW, y2 - y1);
-            });
-
-            // --- Confidence band (± 15% around avg trend) ---
-            ctx.beginPath();
-            for (let i = 0; i < numDays; i++) {
-                const x = dayToX(i);
-                const y = aqiToY(avgTrend[i] * 1.15);
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            for (let i = numDays - 1; i >= 0; i--) {
-                const x = dayToX(i);
-                const y = aqiToY(avgTrend[i] * 0.85);
-                ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(255,69,0,0.10)';
-            ctx.fill();
-
-            // --- Top ward line (faint) ---
-            ctx.beginPath();
-            topTrend.forEach((v, i) => {
-                const x = dayToX(i);
-                const y = aqiToY(v);
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            });
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([3, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // --- City average main line with glow ---
-            // Glow pass
-            ctx.shadowColor = '#ff4500';
-            ctx.shadowBlur = 12;
-            ctx.beginPath();
-            avgTrend.forEach((v, i) => {
-                const x = dayToX(i);
-                const y = aqiToY(v);
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            });
-            ctx.strokeStyle = '#ff4500';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            ctx.shadowBlur = 0;
-
-            // --- Live dot at current position (rightmost) ---
-            const lastX = dayToX(numDays - 1);
-            const lastY = aqiToY(avgTrend[numDays - 1]);
-            ctx.beginPath();
-            ctx.arc(lastX, lastY, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff4500';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Live AQI label
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 11px Space Grotesk, sans-serif';
-            ctx.fillText(`AQI ${avgTrend[numDays-1]}`, lastX - 30, lastY - 12);
-        }
-
-        // Re-draw chart on window resize
-        window.addEventListener('resize', () => {
-            if (AuthoritySync.wards.length) drawAQIChart(AuthoritySync.wards);
-        });
-
-        // Draw immediately with cached data if available
-        document.addEventListener('DOMContentLoaded', () => {
-            if (AuthoritySync.wards.length) drawAQIChart(AuthoritySync.wards);
-        });
+        // Preloader Removed
 
         // Map Initialization
         let map;
-        let wardGeoLayer;
         document.addEventListener('DOMContentLoaded', () => {
             map = L.map('map-container', {
                 zoomControl: false,
@@ -827,11 +674,16 @@
             fetch('/delhi_wards.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    wardGeoLayer = L.geoJSON(data, {
+                    L.geoJSON(data, {
                         style: (feature) => {
-                            const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                            const aqi = wardData ? wardData.aqi : 150;
-                            const color = AuthoritySync.getAQIColor(aqi);
+                            // Simulate AQI data
+                            const aqi = Math.floor(Math.random() * 400);
+                            let color = '#00b050'; // Good
+                            if (aqi > 50) color = '#ffff00'; // Satisfactory
+                            if (aqi > 100) color = '#ff7f00'; // Moderate
+                            if (aqi > 200) color = '#ff0000'; // Poor
+                            if (aqi > 300) color = '#8b0000'; // Severe
+
                             feature.properties.aqi = aqi;
 
                             return {
@@ -859,7 +711,7 @@
                                 const tooltipName = document.getElementById('tooltip-name');
                                 const tooltipAqi = document.getElementById('tooltip-aqi');
 
-                                tooltipName.innerText = feature.properties.Ward_Name || feature.properties.name || 'Unknown Ward';
+                                tooltipName.innerText = feature.properties.Ward_Name || 'Unknown Ward';
                                 tooltipAqi.innerText = feature.properties.aqi || '--';
                                 tooltip.classList.remove('hidden');
                             });
@@ -871,12 +723,15 @@
                             });
 
                             layer.on('mouseout', function (e) {
+                                // Reset Style
                                 e.target.setStyle({
                                     weight: 1,
                                     color: 'white',
                                     dashArray: '3',
                                     fillOpacity: 0.6
                                 });
+
+                                // Hide Tooltip
                                 document.getElementById('map-tooltip').classList.add('hidden');
                             });
 

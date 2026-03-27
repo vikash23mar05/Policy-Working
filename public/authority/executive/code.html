@@ -4,13 +4,16 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Executive Command — Ward-Wise Intelligence</title>
+    <title>Executive View - Senior Decision Makers</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="../authority-theme.css" />
 
     <script>
         tailwind.config = {
@@ -18,25 +21,74 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary":          "#ff4500",
-                        "primary-dim":      "#ad2c00",
-                        "background-dark":  "#0d131f",
-                        "card-dark":        "#111927",
-                        "surface":          "#111927",
-                        "accent-red":       "#ef4444",
-                        "accent-yellow":    "#f59e0b",
+                        "primary": "#00cbe6",
+                        "background-light": "#f0f7fa",
+                        "background-dark": "#0e283a",
+                        "card-dark": "#153C54",
+                        "accent-red": "#EF4444",
+                        "accent-yellow": "#FACC15",
                     },
                     fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"],
+                        "display": ["Manrope", "sans-serif"]
                     },
-                    borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
                 },
             },
         }
-    </script>    <style>/* Styles provided by authority-theme.css */</style>
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .donut-gradient {
+            background: conic-gradient(#00cbe6 0% 45%, #FACC15 45% 70%, #EF4444 70% 85%, #395256 85% 100%);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-active {
+            color: #00cbe6;
+            border-bottom-width: 2px;
+            border-color: #00cbe6;
+        }
+
+        .tab-inactive {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .tab-inactive:hover {
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0e283a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #153C54;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00cbe6;
+        }
+    </style>
 </head>
 
-<body class="bg-background-dark text-white overflow-hidden">
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen overflow-x-hidden">
 
     <!-- Preloader Removed -->
 
@@ -544,61 +596,54 @@
                     <div class="lg:col-span-2">
                         <div class="bg-card-dark rounded-xl overflow-hidden border border-white/5">
                             <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-bold text-lg">Live Violation Feed</h3>
-                                    <p class="text-xs text-white/40 mt-0.5">Auto-updating • Real-time enforcement tracking</p>
+                                <h3 class="font-bold text-lg">Live Violation Feed</h3>
+                                <span class="flex h-2 w-2 relative">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                            </div>
+                            <div class="divide-y divide-white/5">
+                                <div class="p-4 hover:bg-white/5 transition-colors flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-sm">Illegal Waste Burning</p>
+                                        <p class="text-xs text-white/50">Ward 44 • 2 mins ago</p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-red-500/20 text-red-500 px-2 py-1 rounded">PENDING</span>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs text-white/40" id="breach-counter">0 active</span>
-                                    <span class="flex h-2 w-2 relative">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                    </span>
+                                <div class="p-4 hover:bg-white/5 transition-colors flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-sm">Construction Dust</p>
+                                        <p class="text-xs text-white/50">Ward 12 • 15 mins ago</p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded">ASSIGNED</span>
+                                </div>
+                                <div class="p-4 hover:bg-white/5 transition-colors flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-sm">Industrial Emission</p>
+                                        <p class="text-xs text-white/50">Ward 08 • 42 mins ago</p>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-green-500/20 text-green-500 px-2 py-1 rounded">RESOLVED</span>
                                 </div>
                             </div>
-                            <!-- Live violations rendered here by JS -->
-                            <div id="violation-feed" class="divide-y divide-white/5 max-h-[420px] overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="space-y-4">
-                        <!-- Status breakdown -->
-                        <div class="bg-card-dark rounded-xl p-5 border border-white/5">
-                            <h4 class="text-xs font-bold uppercase tracking-widest text-white/50 mb-4">Status Breakdown</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="flex items-center gap-2 text-xs font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>ACTIVE
-                                    </span>
-                                    <span class="text-xs font-black text-red-400" id="count-active">0</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="flex items-center gap-2 text-xs font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-yellow-400"></span>ASSIGNED
-                                    </span>
-                                    <span class="text-xs font-black text-yellow-400" id="count-assigned">0</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="flex items-center gap-2 text-xs font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-blue-400"></span>ACTIONED
-                                    </span>
-                                    <span class="text-xs font-black text-blue-400" id="count-actioned">0</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="flex items-center gap-2 text-xs font-bold">
-                                        <span class="w-2 h-2 rounded-full bg-green-400"></span>CLOSED
-                                    </span>
-                                    <span class="text-xs font-black text-green-400" id="count-closed">0</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gradient-to-br from-primary/20 to-primary/5 p-5 rounded-xl border border-primary/20 text-center">
-                            <h4 class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Total Challans Issued</h4>
-                            <p class="text-4xl font-black text-white mb-1" id="challan-count">1,248</p>
+                    <div class="space-y-6">
+                        <div
+                            class="bg-gradient-to-br from-primary/20 to-primary/5 p-6 rounded-xl border border-primary/20 text-center">
+                            <h4 class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Total Challans
+                                Issued</h4>
+                            <p class="text-5xl font-black text-white mb-2">1,248</p>
                             <p class="text-xs text-white/50">Last 24 Hours</p>
                         </div>
-                        <div class="bg-gradient-to-br from-accent-red/20 to-accent-red/5 p-5 rounded-xl border border-accent-red/20 text-center">
-                            <h4 class="text-accent-red font-bold uppercase tracking-widest text-xs mb-2">Revenue Collected</h4>
-                            <p class="text-4xl font-black text-white mb-1" id="revenue-amount">₹4.2L</p>
+                        <div
+                            class="bg-gradient-to-br from-accent-red/20 to-accent-red/5 p-6 rounded-xl border border-accent-red/20 text-center">
+                            <h4 class="text-accent-red font-bold uppercase tracking-widest text-xs mb-2">Revenue
+                                Collected</h4>
+                            <p class="text-5xl font-black text-white mb-2">₹4.2L</p>
                             <p class="text-xs text-white/50">Environmental Compensation</p>
                         </div>
                     </div>
@@ -701,99 +746,11 @@
         </div>
     </div>
 
-    <script src="../authority-sync.js"></script>
     <script>
-        // Real-time Data Sync Integration
-        window.onAuthorityDataUpdate = function(wards) {
-            console.log('🏛️ Updating Executive Dashboard with real-time ward data');
-            const stats = AuthoritySync.getStats();
-            
-            // Update KPIs
-            const kpiValues = document.querySelectorAll('.text-white.text-4xl.font-black');
-            if (kpiValues[0]) kpiValues[0].innerText = stats.avgAqi;
-            if (kpiValues[1]) kpiValues[1].innerText = stats.severePercent + '%';
-            
-            // Update Global AQI in heading
-            const globalAqiEl = document.querySelector('.text-accent-red.font-bold');
-            if (globalAqiEl) globalAqiEl.innerText = 'Global AQI: ' + stats.avgAqi;
-
-            // Update Priority Table
-            const topWards = [...wards].sort((a, b) => b.aqi - a.aqi).slice(0, 5);
-            const tableBody = document.querySelector('tbody.divide-y.divide-white\\/5');
-            if (tableBody) {
-                tableBody.innerHTML = topWards.map((w, i) => `
-                    <tr class="hover:bg-white/5 transition-colors group cursor-pointer" onclick="focusWard('${w.name}')">
-                        <td class="px-6 py-5 font-black text-white/40">${(i+1).toString().padStart(2, '0')}</td>
-                        <td class="px-6 py-5 font-bold">${w.name}</td>
-                        <td class="px-6 py-5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-accent-red font-black">${w.aqi}</span>
-                                <div class="flex gap-0.5">
-                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 200 ? 1 : 0.2}"></div>
-                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 300 ? 1 : 0.2}"></div>
-                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 400 ? 1 : 0.2}"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-5">
-                            <span class="px-2 py-1 rounded bg-accent-red/20 text-accent-red text-[10px] font-black uppercase">${w.status}</span>
-                        </td>
-                        <td class="px-6 py-5 text-right">
-                            <button onclick="drillDown('${w.name}')" class="bg-primary/10 group-hover:bg-primary text-primary group-hover:text-background-dark px-4 py-2 rounded-lg text-xs font-black transition-all">DRILL DOWN</button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Refresh Map
-            if (map && wardGeoLayer) {
-                wardGeoLayer.setStyle((feature) => {
-                    const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                    const aqi = wardData ? wardData.aqi : 150;
-                    const color = AuthoritySync.getAQIColor(aqi);
-                    feature.properties.aqi = aqi;
-                    return {
-                        fillColor: color,
-                        weight: 1,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.6
-                    };
-                });
-            }
-        };
-
-        window.drillDown = function(wardName) {
-            const ward = AuthoritySync.getWard(wardName);
-            if (!ward) return;
-            
-            // Focus on map
-            focusWard(wardName);
-            
-            // Show feedback
-            showToast(`Generating Executive Intel Report for ${wardName}...`);
-            
-            // Maybe scroll to map or highlight something
-            console.log('Executive Drill Down:', ward);
-        };
-
-        function showToast(message) {
-            let toast = document.getElementById('sync-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'sync-toast';
-                toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface-dark border border-primary/30 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 transform translate-y-24 transition-transform duration-500 z-[1000] font-bold';
-                document.body.appendChild(toast);
-            }
-            toast.innerHTML = `<span class="material-symbols-outlined text-primary">analytics</span> <span>${message}</span>`;
-            toast.classList.remove('translate-y-24');
-            setTimeout(() => toast.classList.add('translate-y-24'), 4000);
-        }
+        // Preloader Removed
 
         // Map Logic
         let map;
-        let wardGeoLayer;
         let wardLayers = {};
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -811,11 +768,17 @@
             fetch('/delhi_wards.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    wardGeoLayer = L.geoJSON(data, {
+                    L.geoJSON(data, {
                         style: (feature) => {
-                            const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                            const aqi = wardData ? wardData.aqi : 150;
-                            const color = AuthoritySync.getAQIColor(aqi);
+                            // Simulate AQI data
+                            const aqi = Math.floor(Math.random() * 400);
+                            let color = '#00b050'; // Good
+                            if (aqi > 50) color = '#ffff00'; // Satisfactory
+                            if (aqi > 100) color = '#ff7f00'; // Moderate
+                            if (aqi > 200) color = '#ff0000'; // Poor
+                            if (aqi > 300) color = '#8b0000'; // Severe
+
+                            // Store AQI in feature for tooltip
                             feature.properties.aqi = aqi;
 
                             return {
@@ -828,7 +791,7 @@
                             };
                         },
                         onEachFeature: (feature, layer) => {
-                            const wardName = feature.properties.Ward_Name || feature.properties.name;
+                            const wardName = feature.properties.Ward_Name;
                             if (wardName) {
                                 wardLayers[wardName] = layer;
                             }
@@ -848,7 +811,7 @@
                                 const tooltipName = document.getElementById('tooltip-name');
                                 const tooltipAqi = document.getElementById('tooltip-aqi');
 
-                                tooltipName.innerText = wardName || 'Unknown Ward';
+                                tooltipName.innerText = feature.properties.Ward_Name || 'Unknown Ward';
                                 tooltipAqi.innerText = feature.properties.aqi || '--';
                                 tooltip.classList.remove('hidden');
                             });
@@ -860,12 +823,15 @@
                             });
 
                             layer.on('mouseout', function (e) {
+                                // Reset Style
                                 e.target.setStyle({
                                     weight: 1,
                                     color: 'white',
                                     dashArray: '3',
                                     fillOpacity: 0.6
                                 });
+
+                                // Hide Tooltip
                                 document.getElementById('map-tooltip').classList.add('hidden');
                             });
 
@@ -880,8 +846,11 @@
 
         // Focus Ward from Table
         window.focusWard = (wardName) => {
+            // Find layer by partial name match if exact match fails
             let targetLayer = wardLayers[wardName];
+
             if (!targetLayer) {
+                // Try partial match
                 const key = Object.keys(wardLayers).find(k => k.includes(wardName) || wardName.includes(k));
                 if (key) targetLayer = wardLayers[key];
             }
@@ -902,154 +871,25 @@
                         fillOpacity: 0.6
                     });
                 }, 2000);
+            } else {
+                console.warn('Ward not found on map:', wardName);
             }
         };
-
-        // =============================================
-        // LIVE ENFORCEMENT FEED ENGINE
-        // =============================================
-        (function() {
-            const VIOLATION_TYPES = [
-                'Illegal Waste Burning', 'Construction Dust Violation', 'Industrial Emission',
-                'Diesel Generator Exhaust', 'Open Biomass Burning', 'Unpaved Road Dust',
-                'Vehicle Smoke Emission', 'Unauthorized Brick Kiln', 'Chemical Waste Dumping'
-            ];
-            const WARDS = [
-                'Ward 12', 'Ward 19', 'Ward 08', 'Ward 44', 'Ward 33',
-                'Ward 27', 'Ward 55', 'Ward 03', 'Ward 71', 'Ward 88'
-            ];
-            const STATUS_FLOW = ['ACTIVE', 'ASSIGNED', 'ACTIONED', 'CLOSED'];
-            const STATUS_STYLES = {
-                'ACTIVE':   { bg: 'bg-red-500/20',    text: 'text-red-400' },
-                'ASSIGNED': { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-                'ACTIONED': { bg: 'bg-blue-500/20',   text: 'text-blue-400' },
-                'CLOSED':   { bg: 'bg-green-500/20',  text: 'text-green-400' }
-            };
-
-            let violations = [];
-            let challanCount = 1248;
-            let revenueUnits = 420000; // in rupees
-            let nextId = 1;
-
-            function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-            function timeAgo(ts) {
-                const d = Math.floor((Date.now() - ts) / 1000);
-                if (d < 60) return d + 's ago';
-                if (d < 3600) return Math.floor(d/60) + 'm ago';
-                return Math.floor(d/3600) + 'h ago';
-            }
-
-            function addViolation() {
-                violations.unshift({
-                    id: nextId++,
-                    type: rand(VIOLATION_TYPES),
-                    ward: rand(WARDS),
-                    ts: Date.now(),
-                    statusIdx: 0
-                });
-                // Keep max 12 in feed
-                if (violations.length > 12) violations.splice(12);
-            }
-
-            function advanceStatuses() {
-                violations.forEach(v => {
-                    // Each violation has a random chance to advance
-                    if (v.statusIdx < STATUS_FLOW.length - 1 && Math.random() < 0.35) {
-                        v.statusIdx++;
-                        if (STATUS_FLOW[v.statusIdx] === 'CLOSED') {
-                            challanCount++;
-                            revenueUnits += Math.floor(Math.random() * 20000) + 5000;
-                        }
-                    }
-                });
-            }
-
-            function renderFeed() {
-                const feed = document.getElementById('violation-feed');
-                if (!feed) return;
-
-                const counts = { ACTIVE: 0, ASSIGNED: 0, ACTIONED: 0, CLOSED: 0 };
-                violations.forEach(v => counts[STATUS_FLOW[v.statusIdx]]++);
-
-                // Update status counters
-                ['active','assigned','actioned','closed'].forEach(s => {
-                    const el = document.getElementById('count-' + s);
-                    if (el) el.textContent = counts[s.toUpperCase()];
-                });
-
-                const activeCount = counts.ACTIVE + counts.ASSIGNED + counts.ACTIONED;
-                const bc = document.getElementById('breach-counter');
-                if (bc) bc.textContent = activeCount + ' active';
-
-                // Update challan + revenue
-                const cc = document.getElementById('challan-count');
-                if (cc) cc.textContent = challanCount.toLocaleString('en-IN');
-                const ra = document.getElementById('revenue-amount');
-                if (ra) {
-                    const lakh = revenueUnits / 100000;
-                    ra.textContent = '₹' + lakh.toFixed(1) + 'L';
-                }
-
-                // Render rows
-                feed.innerHTML = violations.map(v => {
-                    const status = STATUS_FLOW[v.statusIdx];
-                    const style = STATUS_STYLES[status];
-                    return `<div class="p-4 hover:bg-white/5 transition-all duration-300 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold text-sm">${v.type}</p>
-                            <p class="text-xs text-white/50">${v.ward} • ${timeAgo(v.ts)}</p>
-                        </div>
-                        <span class="text-xs font-black ${style.bg} ${style.text} px-3 py-1 rounded-full tracking-wider transition-all duration-500">${status}</span>
-                    </div>`;
-                }).join('');
-            }
-
-            // Seed 5 violations at different statuses
-            for (let i = 0; i < 5; i++) {
-                addViolation();
-                violations[i].statusIdx = Math.min(i, STATUS_FLOW.length - 1);
-                violations[i].ts -= i * 8 * 60 * 1000; // spread timestamps
-            }
-
-            // Initial render
-            renderFeed();
-
-            // New violation every 8–14 seconds
-            function scheduleNewViolation() {
-                const delay = 8000 + Math.random() * 6000;
-                setTimeout(() => {
-                    addViolation();
-                    renderFeed();
-                    scheduleNewViolation();
-                }, delay);
-            }
-            scheduleNewViolation();
-
-            // Advance statuses every 4 seconds
-            setInterval(() => {
-                advanceStatuses();
-                renderFeed();
-            }, 4000);
-
-            // Refresh timestamps every 30 seconds
-            setInterval(renderFeed, 30000);
-        })();
 
         // Tab Logic
         function switchTab(tabId) {
             ['overview', 'zone', 'policy', 'enforcement'].forEach(id => {
                 const btn = document.getElementById('tab-' + id);
                 const content = document.getElementById('content-' + id);
-                if (btn && content) {
-                    if (id === tabId) {
-                        btn.classList.remove('tab-inactive');
-                        btn.classList.add('tab-active');
-                        content.classList.remove('hidden');
-                    } else {
-                        btn.classList.add('tab-inactive');
-                        btn.classList.remove('tab-active');
-                        content.classList.add('hidden');
-                    }
+
+                if (id === tabId) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                    content.classList.remove('hidden');
+                } else {
+                    btn.classList.add('tab-inactive');
+                    btn.classList.remove('tab-active');
+                    content.classList.add('hidden');
                 }
             });
         }
@@ -1058,9 +898,10 @@
         function exportPDF() {
             const element = document.getElementById('pdf-report');
             const dateEl = document.getElementById('pdf-date');
-            if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            dateEl.innerText = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
             element.classList.remove('hidden');
+
             const opt = {
                 margin: 10,
                 filename: 'executive_strategy_brief.pdf',

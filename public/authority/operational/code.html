@@ -4,13 +4,16 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Operational Command — Ward-Wise Intelligence</title>
+    <title>Operational View - Department Heads</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="../authority-theme.css" />
 
     <script>
         tailwind.config = {
@@ -18,29 +21,62 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary":          "#ff4500",
-                        "primary-dim":      "#ad2c00",
-                        "background-dark":  "#0d131f",
-                        "surface":          "#111927",
-                        "surface-accent":   "#1a2535",
-                        "aqi-good":         "#22c55e",
-                        "aqi-moderate":     "#f97316",
-                        "aqi-poor":         "#ef4444",
-                        "accent-red":       "#ef4444",
-                        "accent-green":     "#22c55e",
+                        "primary": "#00cbe6",
+                        "background-light": "#f1f3f4",
+                        "background-dark": "#11252c",
+                        "surface": "#1b333a",
+                        "surface-accent": "#27383a",
+                        "aqi-good": "#3DB324",
+                        "aqi-moderate": "#D99419",
+                        "aqi-poor": "#CC1A1A",
                     },
                     fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"],
+                        "display": ["Inter"]
                     },
-                    borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
                 },
             },
         }
     </script>
-    <style>/* Styles provided by authority-theme.css */</style>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #27383a;
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-active {
+            color: #00cbe6;
+            border-bottom: 2px solid #00cbe6;
+        }
+
+        .tab-inactive {
+            color: #9ab8bc;
+        }
+
+        .tab-inactive:hover {
+            color: white;
+        }
+    </style>
 </head>
 
-<body class="bg-background-dark font-display text-white selection:bg-primary/30 overflow-hidden">
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary/30 overflow-hidden">
 
     <!-- Preloader Removed -->
 
@@ -379,31 +415,12 @@
 
     <!-- Urgent Alerts Bar (Floating Bottom) -->
     <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-        <button id="alerts-btn" onclick="toggleAlertsPanel()"
-            class="flex items-center gap-3 px-6 py-3 bg-aqi-poor text-white rounded-full font-black text-sm shadow-[0_10px_30px_rgba(204,26,26,0.4)] animate-pulse hover:scale-105 transition-transform hidden">
+        <button
+            class="flex items-center gap-3 px-6 py-3 bg-aqi-poor text-white rounded-full font-black text-sm shadow-[0_10px_30px_rgba(204,26,26,0.4)] animate-pulse hover:scale-105 transition-transform">
             <span class="material-symbols-outlined">warning</span>
-            <span id="alerts-text">URGENT ALERTS (3 ACTIVE BREACHES)</span>
+            URGENT ALERTS (3 ACTIVE BREACHES)
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
         </button>
-    </div>
-
-    <!-- Alerts Side Panel (Slide-in) -->
-    <div id="alerts-panel" class="fixed right-0 top-0 h-full w-[400px] bg-background-dark border-l border-surface-accent z-[60] transform translate-x-full transition-transform duration-500 shadow-2xl flex flex-col">
-        <div class="p-6 border-b border-surface-accent flex justify-between items-center bg-surface">
-            <h2 class="text-xl font-black text-white flex items-center gap-3">
-                <span class="material-symbols-outlined text-accent-red">emergency</span>
-                ACTIVE BREACHES
-            </h2>
-            <button onclick="toggleAlertsPanel()" class="size-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-colors">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div id="breach-list" class="flex-1 overflow-y-auto p-6 space-y-4">
-            <!-- Breaches populated by JS -->
-        </div>
-        <div class="p-6 bg-surface border-t border-surface-accent">
-            <button class="w-full bg-accent-red text-white py-3 rounded-xl font-black text-sm hover:brightness-110 transition-all uppercase">Broadcast Fleet Warning</button>
-        </div>
     </div>
 
     <!-- Hidden PDF Report Structure -->
@@ -459,192 +476,11 @@
         </div>
     </div>
 
-    <script src="../authority-sync.js"></script>
     <script>
-        // Real-time Data Sync Integration
-        let currentWards = [];
-        window.onAuthorityDataUpdate = function(wards) {
-            console.log('🚛 Updating Operational View with real-time ward data');
-            currentWards = wards;
-            
-            updateAlertsUI(wards);
-
-            // Refresh Map
-            if (map && wardGeoLayer) {
-                wardGeoLayer.setStyle((feature) => {
-                    const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                    const aqi = wardData ? wardData.aqi : 150;
-                    const color = AuthoritySync.getAQIColor(aqi);
-                    feature.properties.aqi = aqi;
-                    return {
-                        fillColor: color,
-                        weight: 1,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.6
-                    };
-                });
-            }
-
-            // If a ward was already selected, update its info
-            const currentWardName = document.getElementById('selected-ward-name').innerText;
-            if (currentWardName && currentWardName !== 'Select a Ward') {
-                const ward = AuthoritySync.getWard(currentWardName);
-                if (ward) updateWardDetails(ward);
-            }
-        };
-
-        window.toggleAlertsPanel = function() {
-            const panel = document.getElementById('alerts-panel');
-            panel.classList.toggle('translate-x-full');
-        };
-
-        function updateAlertsUI(wards) {
-            const breaches = wards.filter(w => w.aqi > 200); // Lowered threshold to 200 for demo visibility
-            const alertsBtn = document.getElementById('alerts-btn');
-            const alertsText = document.getElementById('alerts-text');
-            const breachList = document.getElementById('breach-list');
-
-            // Ensure button is visible
-            alertsBtn.classList.remove('hidden');
-
-            if (breaches.length > 0) {
-                // BREACH STATE
-                alertsBtn.classList.remove('bg-emerald-600', 'shadow-[0_10px_30px_rgba(5,150,105,0.4)]');
-                alertsBtn.classList.add('bg-aqi-poor', 'shadow-[0_10px_30px_rgba(204,26,26,0.4)]', 'animate-pulse');
-                alertsText.innerText = `URGENT ALERTS (${breaches.length} ACTIVE BREACHES)`;
-                
-                breachList.innerHTML = breaches.map(b => `
-                    <div class="bg-surface-accent/20 border-l-4 border-accent-red p-5 rounded-r-xl cursor-pointer hover:bg-surface-accent/40 transition-all group" onclick="focusOnMap('${b.name}'); toggleAlertsPanel();">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-black text-white group-hover:text-accent-red transition-colors">${b.name}</h4>
-                            <span class="text-xs bg-accent-red text-white px-2 py-0.5 rounded font-bold">${b.aqi} AQI</span>
-                        </div>
-                        <p class="text-[10px] text-[#9ab8bc] uppercase font-bold mb-3">Status: ${b.status} • Violation Detected</p>
-                        <div class="flex gap-2">
-                            <button onclick="executeAction(this, 'Sprinklers')" class="bg-white/5 hover:bg-white/20 text-white text-[10px] px-3 py-1.5 rounded font-black border border-white/10 uppercase">Deploy Sprinklers</button>
-                            <button onclick="executeAction(this, 'Traffic Ban')" class="bg-white/5 hover:bg-white/20 text-white text-[10px] px-3 py-1.5 rounded font-black border border-white/10 uppercase">Restrict Traffic</button>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                // NORMAL STATE
-                alertsBtn.classList.remove('bg-aqi-poor', 'shadow-[0_10px_30px_rgba(204,26,26,0.4)]', 'animate-pulse');
-                alertsBtn.classList.add('bg-emerald-600', 'shadow-[0_10px_30px_rgba(5,150,105,0.4)]');
-                alertsText.innerText = `SYSTEM NORMAL (0 ACTIVE BREACHES)`;
-                
-                breachList.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-center opacity-40 py-20">
-                        <span class="material-symbols-outlined text-6xl mb-4">check_circle</span>
-                        <h3 class="font-black text-white">ALL SECTORS SECURE</h3>
-                        <p class="text-xs text-[#9ab8bc] mt-2">No active violations detected in any ward.</p>
-                    </div>
-                `;
-            }
-        }
-
-        window.focusOnMap = function(wardName) {
-            if (!map || !wardGeoLayer) return;
-            wardGeoLayer.eachLayer(layer => {
-                const name = layer.feature.properties.Ward_Name || layer.feature.properties.name;
-                if (name && (name.toUpperCase().includes(wardName.toUpperCase()) || wardName.toUpperCase().includes(name.toUpperCase()))) {
-                    map.fitBounds(layer.getBounds(), { padding: [50, 50], maxZoom: 14 });
-                    layer.setStyle({ weight: 6, color: '#ff4444' });
-                    setTimeout(() => layer.setStyle({ weight: 1, color: 'white' }), 2000);
-                    const ward = currentWards.find(w => w.name === wardName);
-                    if (ward) updateWardDetails(ward);
-                }
-            });
-        };
-
-        // Action Execution Logic
-        window.executeAction = function(btn, actionName) {
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = 'EXECUTING...';
-            btn.classList.add('bg-white/20', 'cursor-not-allowed');
-            btn.classList.remove('bg-primary', 'text-background-dark');
-            btn.classList.add('text-white');
-
-            // Find current ward name
-            const wardName = document.getElementById('selected-ward-name').innerText;
-            
-            // Show toast
-            showToast(`Protocol "${actionName}" initiated for ${wardName}. Units dispatched.`);
-
-            setTimeout(() => {
-                btn.innerText = 'ACTIVE';
-                btn.classList.add('bg-accent-green/20', 'text-accent-green', 'border', 'border-accent-green/50');
-                btn.classList.remove('bg-white/20');
-                
-                // Simulate an impact update (e.g., lower AQI slightly in view)
-                const aqiEl = document.getElementById('selected-ward-aqi');
-                const currentAqi = parseInt(aqiEl.innerText);
-                if (!isNaN(currentAqi)) {
-                    const newAqi = Math.max(0, currentAqi - 15);
-                    aqiEl.innerText = newAqi;
-                    aqiEl.classList.add('text-accent-green');
-                    setTimeout(() => aqiEl.classList.remove('text-accent-green'), 2000);
-                }
-            }, 1500);
-        };
-
-        function showToast(message) {
-            let toast = document.getElementById('sync-toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'sync-toast';
-                toast.className = 'fixed bottom-8 right-8 bg-surface-dark border border-primary/30 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 transform translate-y-24 transition-transform duration-500 z-[1000]';
-                document.body.appendChild(toast);
-            }
-            toast.innerHTML = `<span class="material-symbols-outlined text-primary">check_circle</span> <span>${message}</span>`;
-            toast.classList.remove('translate-y-24');
-            setTimeout(() => toast.classList.add('translate-y-24'), 4000);
-        }
-
-        function updateWardDetails(ward) {
-            document.getElementById('selected-ward-name').innerText = ward.name;
-            document.getElementById('selected-ward-aqi').innerText = ward.aqi;
-            
-            // Update Source Attribution
-            const sourceBars = document.querySelectorAll('.h-full.rounded-full[style^="width"]');
-            if (sourceBars[0]) {
-                sourceBars[0].style.width = ward.sourceDistribution.vehicular + '%';
-                sourceBars[0].parentElement.previousElementSibling.querySelector('.text-white').innerText = ward.sourceDistribution.vehicular + '%';
-            }
-            if (sourceBars[1]) {
-                sourceBars[1].style.width = ward.sourceDistribution.construction + '%';
-                sourceBars[1].parentElement.previousElementSibling.querySelector('.text-white').innerText = ward.sourceDistribution.construction + '%';
-            }
-            if (sourceBars[2]) {
-                sourceBars[2].style.width = ward.sourceDistribution.industrial + '%';
-                sourceBars[2].parentElement.previousElementSibling.querySelector('.text-white').innerText = ward.sourceDistribution.industrial + '%';
-            }
-
-            // Update Recommendations
-            const recContainer = document.querySelector('.grid.gap-3');
-            if (recContainer && ward.recommendedActions) {
-                recContainer.innerHTML = ward.recommendedActions.map(action => `
-                    <div class="bg-surface border border-surface-accent p-4 rounded-xl flex items-start justify-between hover:border-primary/50 transition-colors group">
-                        <div class="flex gap-4">
-                            <div class="mt-1 size-10 rounded-lg bg-background-dark flex items-center justify-center text-primary border border-surface-accent">
-                                <span class="material-symbols-outlined">bolt</span>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white">${action}</h4>
-                                <p class="text-xs text-[#9ab8bc] mt-0.5">Automated recommendation based on ${ward.name} metrics.</p>
-                            </div>
-                        </div>
-                        <button onclick="executeAction(this, '${action}')" class="bg-primary text-background-dark font-black text-xs px-4 py-2 rounded-lg hover:brightness-110 active:scale-95 transition-all">EXECUTE</button>
-                    </div>
-                `).join('');
-            }
-        }
+        // Preloader Removed
 
         // Map Initialization
         let map;
-        let wardGeoLayer;
         document.addEventListener('DOMContentLoaded', () => {
             map = L.map('map-container', {
                 zoomControl: false,
@@ -659,11 +495,17 @@
             fetch('/delhi_wards.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    wardGeoLayer = L.geoJSON(data, {
+                    L.geoJSON(data, {
                         style: (feature) => {
-                            const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
-                            const aqi = wardData ? wardData.aqi : 150;
-                            const color = AuthoritySync.getAQIColor(aqi);
+                            // Simulate AQI data
+                            const aqi = Math.floor(Math.random() * 400);
+                            let color = '#00b050'; // Good
+                            if (aqi > 50) color = '#ffff00'; // Satisfactory
+                            if (aqi > 100) color = '#ff7f00'; // Moderate
+                            if (aqi > 200) color = '#ff0000'; // Poor
+                            if (aqi > 300) color = '#8b0000'; // Severe
+
+                            // Store AQI in feature for click handler
                             feature.properties.aqi = aqi;
 
                             return {
@@ -691,7 +533,7 @@
                                 const tooltipName = document.getElementById('tooltip-name');
                                 const tooltipAqi = document.getElementById('tooltip-aqi');
 
-                                tooltipName.innerText = feature.properties.Ward_Name || feature.properties.name || 'Unknown Ward';
+                                tooltipName.innerText = feature.properties.Ward_Name || 'Unknown Ward';
                                 tooltipAqi.innerText = feature.properties.aqi || '--';
                                 tooltip.classList.remove('hidden');
                             });
@@ -703,19 +545,22 @@
                             });
 
                             layer.on('mouseout', function (e) {
+                                // Reset Style
                                 e.target.setStyle({
                                     weight: 1,
                                     color: 'white',
                                     dashArray: '3',
                                     fillOpacity: 0.6
                                 });
+
+                                // Hide Tooltip
                                 document.getElementById('map-tooltip').classList.add('hidden');
                             });
 
                             layer.on('click', function (e) {
                                 map.fitBounds(e.target.getBounds());
-                                const ward = AuthoritySync.getWard(feature.properties.Ward_Name);
-                                if (ward) updateWardDetails(ward);
+                                document.getElementById('selected-ward-name').innerText = feature.properties.Ward_Name || 'Unknown Ward';
+                                document.getElementById('selected-ward-aqi').innerText = feature.properties.aqi || '--';
                             });
                         }
                     }).addTo(map);
