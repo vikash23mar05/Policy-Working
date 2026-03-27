@@ -161,9 +161,9 @@
                             <p class="text-white/60 text-lg font-medium">City-wide Air Quality Snapshot</p>
                             <span class="w-1.5 h-1.5 rounded-full bg-white/30"></span>
                             <div class="flex items-center gap-2">
-                                <span id="city-aqi-avg-label" class="text-accent-red font-bold">Global AQI: --</span>
+                                <span class="text-accent-red font-bold">Global AQI: 142</span>
                                 <span class="material-symbols-outlined text-accent-red text-sm">trending_up</span>
-                                <span id="city-aqi-status-label" class="text-accent-red text-sm font-bold">Worsening</span>
+                                <span class="text-accent-red text-sm font-bold">Worsening (+12%)</span>
                             </div>
                         </div>
                     </div>
@@ -189,11 +189,11 @@
                             <span class="material-symbols-outlined text-primary">sensors</span>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <p id="kpi-avg-aqi" class="text-white text-4xl font-black">--</p>
-                            <p id="kpi-aqi-status" class="text-accent-yellow text-sm font-bold">--</p>
+                            <p class="text-white text-4xl font-black">156</p>
+                            <p class="text-accent-yellow text-sm font-bold">Moderate</p>
                         </div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                            <div id="kpi-aqi-progress" class="bg-accent-yellow h-full w-0 transition-all duration-1000"></div>
+                            <div class="bg-accent-yellow h-full w-3/5"></div>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 rounded-xl p-6 bg-card-dark border border-white/5 shadow-xl">
@@ -202,11 +202,11 @@
                             <span class="material-symbols-outlined text-accent-red">warning</span>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <p id="kpi-severe-pct" class="text-white text-4xl font-black">--%</p>
+                            <p class="text-white text-4xl font-black">12%</p>
                             <p class="text-accent-red text-sm font-bold">Critical Risk</p>
                         </div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                            <div id="kpi-severe-progress" class="bg-accent-red h-full w-0 transition-all duration-1000"></div>
+                            <div class="bg-accent-red h-full w-[12%]"></div>
                         </div>
                     </div>
                     <div class="flex flex-col gap-4 rounded-xl p-6 bg-card-dark border border-white/5 shadow-xl">
@@ -266,7 +266,7 @@
                                             Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="top-priority-table-body" class="divide-y divide-white/5">
+                                <tbody class="divide-y divide-white/5">
                                     <tr class="hover:bg-white/5 transition-colors group cursor-pointer"
                                         onclick="focusWard('Ward 12')">
                                         <td class="px-6 py-5 font-black text-white/40">01</td>
@@ -400,10 +400,10 @@
                         <div
                             class="bg-card-dark rounded-xl p-8 border border-white/5 shadow-xl flex flex-col items-center justify-center grow">
                             <div class="relative size-56">
-                                <div id="donut-chart" class="size-full rounded-full flex items-center justify-center p-8">
+                                <div class="size-full rounded-full donut-gradient flex items-center justify-center p-8">
                                     <div
                                         class="size-full rounded-full bg-card-dark flex flex-col items-center justify-center">
-                                        <p id="total-wards-label" class="text-3xl font-black">--</p>
+                                        <p class="text-3xl font-black">124</p>
                                         <p
                                             class="text-[10px] text-white/50 uppercase font-bold tracking-widest leading-none">
                                             Total Wards</p>
@@ -413,19 +413,19 @@
                             <div class="mt-8 w-full grid grid-cols-2 gap-4">
                                 <div class="flex items-center gap-2">
                                     <div class="size-2 rounded-full bg-primary"></div>
-                                    <span id="legend-moderate" class="text-xs font-bold text-white/60">Moderate (--%)</span>
+                                    <span class="text-xs font-bold text-white/60">Moderate (45%)</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="size-2 rounded-full bg-accent-yellow"></div>
-                                    <span id="legend-poor" class="text-xs font-bold text-white/60">Poor (--%)</span>
+                                    <span class="text-xs font-bold text-white/60">Poor (25%)</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="size-2 rounded-full bg-accent-red"></div>
-                                    <span id="legend-severe" class="text-xs font-bold text-white/60">Severe (--%)</span>
+                                    <span class="text-xs font-bold text-white/60">Severe (15%)</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="size-2 rounded-full bg-white/20"></div>
-                                    <span id="legend-good" class="text-xs font-bold text-white/60">Good (--%)</span>
+                                    <span class="text-xs font-bold text-white/60">Good (15%)</span>
                                 </div>
                             </div>
                         </div>
@@ -746,91 +746,102 @@
         </div>
     </div>
 
+    <script src="../authority-sync.js"></script>
     <script>
-        // Preloader Removed
-
-        // Map Logic
-        let map;
-        let wardLayers = {};
-
-        function syncAuthorityData() {
-            const sharedData = JSON.parse(localStorage.getItem('shared_ward_data') || '[]');
-            if (!sharedData.length) return;
-
-            // Calculate city-wide metrics
-            const totalWards = sharedData.length;
-            const avgAqi = Math.round(sharedData.reduce((acc, w) => acc + w.aqi, 0) / totalWards);
-            const severeWardsCount = sharedData.filter(w => w.aqi > 300).length;
-            const severePercent = Math.round((severeWardsCount / totalWards) * 100);
-            const topWards = [...sharedData].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 5);
-
-            // Donut Chart Calculation
-            const moderateCount = sharedData.filter(w => w.aqi > 50 && w.aqi <= 200).length;
-            const poorCount = sharedData.filter(w => w.aqi > 200 && w.aqi <= 300).length;
-            const goodCount = sharedData.filter(w => w.aqi <= 50).length;
-            const severeCount = totalWards - moderateCount - poorCount - goodCount;
-
-            const modPct = Math.round((moderateCount / totalWards) * 100);
-            const poorPct = Math.round((poorCount / totalWards) * 100);
-            const sevPct = Math.round((severeCount / totalWards) * 100);
-            const gooPct = 100 - modPct - poorPct - sevPct;
-
-            const donut = document.getElementById('donut-chart');
-            if (donut) {
-                const stop1 = modPct;
-                const stop2 = stop1 + poorPct;
-                const stop3 = stop2 + sevPct;
-                donut.style.background = `conic-gradient(#00cbe6 0% ${stop1}%, #FACC15 ${stop1}% ${stop2}%, #EF4444 ${stop2}% ${stop3}%, #395256 ${stop3}% 100%)`;
-            }
-
-            // Update Legend & Labels
-            document.getElementById('total-wards-label').innerText = totalWards;
-            document.getElementById('legend-moderate').innerText = `Moderate (${modPct}%)`;
-            document.getElementById('legend-poor').innerText = `Poor (${poorPct}%)`;
-            document.getElementById('legend-severe').innerText = `Severe (${sevPct}%)`;
-            document.getElementById('legend-good').innerText = `Good (${gooPct}%)`;
-
-            // Update Labels
-            document.getElementById('city-aqi-avg-label').innerText = `Global AQI: ${avgAqi}`;
-            document.getElementById('city-aqi-status-label').innerText = avgAqi > 300 ? 'Severe' : avgAqi > 200 ? 'Worsening' : 'Stable';
+        // Real-time Data Sync Integration
+        window.onAuthorityDataUpdate = function(wards) {
+            console.log('🏛️ Updating Executive Dashboard with real-time ward data');
+            const stats = AuthoritySync.getStats();
             
-            document.getElementById('kpi-avg-aqi').innerText = avgAqi;
-            document.getElementById('kpi-aqi-status').innerText = avgAqi > 300 ? 'Severe' : avgAqi > 200 ? 'Poor' : 'Moderate';
-            document.getElementById('kpi-aqi-progress').style.width = `${Math.min(100, (avgAqi / 500) * 100)}%`;
+            // Update KPIs
+            const kpiValues = document.querySelectorAll('.text-white.text-4xl.font-black');
+            if (kpiValues[0]) kpiValues[0].innerText = stats.avgAqi;
+            if (kpiValues[1]) kpiValues[1].innerText = stats.severePercent + '%';
             
-            document.getElementById('kpi-severe-pct').innerText = `${severePercent}%`;
-            document.getElementById('kpi-severe-progress').style.width = `${severePercent}%`;
+            // Update Global AQI in heading
+            const globalAqiEl = document.querySelector('.text-accent-red.font-bold');
+            if (globalAqiEl) globalAqiEl.innerText = 'Global AQI: ' + stats.avgAqi;
 
-            // Update Top 5 Table
-            const tableBody = document.getElementById('top-priority-table-body');
+            // Update Priority Table
+            const topWards = [...wards].sort((a, b) => b.aqi - a.aqi).slice(0, 5);
+            const tableBody = document.querySelector('tbody.divide-y.divide-white\\/5');
             if (tableBody) {
                 tableBody.innerHTML = topWards.map((w, i) => `
-                    <tr class="hover:bg-white/5 transition-colors group cursor-pointer">
-                        <td class="px-6 py-5 font-black text-white/40">${String(i + 1).padStart(2, '0')}</td>
+                    <tr class="hover:bg-white/5 transition-colors group cursor-pointer" onclick="focusWard('${w.name}')">
+                        <td class="px-6 py-5 font-black text-white/40">${(i+1).toString().padStart(2, '0')}</td>
                         <td class="px-6 py-5 font-bold">${w.name}</td>
                         <td class="px-6 py-5">
                             <div class="flex items-center gap-2">
-                                <span class="${w.aqi > 300 ? 'text-accent-red' : 'text-accent-yellow'} font-black">${w.aqi}</span>
+                                <span class="text-accent-red font-black">${w.aqi}</span>
                                 <div class="flex gap-0.5">
-                                    <div class="w-1 h-3 ${w.aqi > 300 ? 'bg-accent-red' : 'bg-accent-yellow'} rounded-full"></div>
-                                    <div class="w-1 h-3 ${w.aqi > 250 ? (w.aqi > 300 ? 'bg-accent-red' : 'bg-accent-yellow') : 'bg-white/20'} rounded-full"></div>
-                                    <div class="w-1 h-3 ${w.aqi > 350 ? 'bg-accent-red' : 'bg-white/20'} rounded-full"></div>
+                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 200 ? 1 : 0.2}"></div>
+                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 300 ? 1 : 0.2}"></div>
+                                    <div class="w-1 h-3 bg-accent-red rounded-full" style="opacity: ${w.aqi > 400 ? 1 : 0.2}"></div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <span class="px-2 py-1 rounded ${w.aqi > 300 ? 'bg-accent-red/20 text-accent-red' : 'bg-accent-yellow/20 text-accent-yellow'} text-[10px] font-black uppercase">${w.status}</span>
+                            <span class="px-2 py-1 rounded bg-accent-red/20 text-accent-red text-[10px] font-black uppercase">${w.status}</span>
                         </td>
                         <td class="px-6 py-5 text-right">
-                            <button class="bg-primary/10 group-hover:bg-primary text-primary group-hover:text-background-dark px-4 py-2 rounded-lg text-xs font-black transition-all">DRILL DOWN</button>
+                            <button onclick="drillDown('${w.name}')" class="bg-primary/10 group-hover:bg-primary text-primary group-hover:text-background-dark px-4 py-2 rounded-lg text-xs font-black transition-all">DRILL DOWN</button>
                         </td>
                     </tr>
                 `).join('');
             }
+
+            // Refresh Map
+            if (map && wardGeoLayer) {
+                wardGeoLayer.setStyle((feature) => {
+                    const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
+                    const aqi = wardData ? wardData.aqi : 150;
+                    const color = AuthoritySync.getAQIColor(aqi);
+                    feature.properties.aqi = aqi;
+                    return {
+                        fillColor: color,
+                        weight: 1,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.6
+                    };
+                });
+            }
+        };
+
+        window.drillDown = function(wardName) {
+            const ward = AuthoritySync.getWard(wardName);
+            if (!ward) return;
+            
+            // Focus on map
+            focusWard(wardName);
+            
+            // Show feedback
+            showToast(`Generating Executive Intel Report for ${wardName}...`);
+            
+            // Maybe scroll to map or highlight something
+            console.log('Executive Drill Down:', ward);
+        };
+
+        function showToast(message) {
+            let toast = document.getElementById('sync-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'sync-toast';
+                toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface-dark border border-primary/30 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 transform translate-y-24 transition-transform duration-500 z-[1000] font-bold';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<span class="material-symbols-outlined text-primary">analytics</span> <span>${message}</span>`;
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => toast.classList.add('translate-y-24'), 4000);
         }
 
+        // Map Logic
+        let map;
+        let wardGeoLayer;
+        let wardLayers = {};
+
         document.addEventListener('DOMContentLoaded', () => {
-            syncAuthorityData();
             map = L.map('map-container', {
                 zoomControl: false,
                 attributionControl: false,
@@ -845,25 +856,12 @@
             fetch('/delhi_wards.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    L.geoJSON(data, {
+                    wardGeoLayer = L.geoJSON(data, {
                         style: (feature) => {
-                            // Use shared ward data from localStorage
-                            const sharedData = JSON.parse(localStorage.getItem('shared_ward_data') || '[]');
-                            const props = feature.properties || {};
-                            const wardName = (props.Ward_Name || props.name || props.Ward || '').toUpperCase();
-                            const wardInfo = sharedData.find(w => w.name.toUpperCase() === wardName);
-                            
-                            const aqi = wardInfo ? wardInfo.aqi : Math.floor(Math.random() * 100 + 150); // Fallback if not found
-                            let color = '#00b050'; // Good
-                            if (aqi > 50) color = '#ffff00'; // Satisfactory
-                            if (aqi > 100) color = '#ff7f00'; // Moderate
-                            if (aqi > 200) color = '#ff0000'; // Poor
-                            if (aqi > 300) color = '#8b0000'; // Severe
-
-                            // Store AQI in feature for tooltip
+                            const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
+                            const aqi = wardData ? wardData.aqi : 150;
+                            const color = AuthoritySync.getAQIColor(aqi);
                             feature.properties.aqi = aqi;
-                            feature.properties.dataConfidence = wardInfo ? wardInfo.dataConfidence : 'Medium';
-                            feature.properties.dataSource = wardInfo ? wardInfo.dataSource : 'estimated';
 
                             return {
                                 fillColor: color,
@@ -875,7 +873,7 @@
                             };
                         },
                         onEachFeature: (feature, layer) => {
-                            const wardName = feature.properties.Ward_Name;
+                            const wardName = feature.properties.Ward_Name || feature.properties.name;
                             if (wardName) {
                                 wardLayers[wardName] = layer;
                             }
@@ -895,7 +893,7 @@
                                 const tooltipName = document.getElementById('tooltip-name');
                                 const tooltipAqi = document.getElementById('tooltip-aqi');
 
-                                tooltipName.innerText = feature.properties.Ward_Name || 'Unknown Ward';
+                                tooltipName.innerText = wardName || 'Unknown Ward';
                                 tooltipAqi.innerText = feature.properties.aqi || '--';
                                 tooltip.classList.remove('hidden');
                             });
@@ -907,15 +905,12 @@
                             });
 
                             layer.on('mouseout', function (e) {
-                                // Reset Style
                                 e.target.setStyle({
                                     weight: 1,
                                     color: 'white',
                                     dashArray: '3',
                                     fillOpacity: 0.6
                                 });
-
-                                // Hide Tooltip
                                 document.getElementById('map-tooltip').classList.add('hidden');
                             });
 
@@ -930,11 +925,8 @@
 
         // Focus Ward from Table
         window.focusWard = (wardName) => {
-            // Find layer by partial name match if exact match fails
             let targetLayer = wardLayers[wardName];
-
             if (!targetLayer) {
-                // Try partial match
                 const key = Object.keys(wardLayers).find(k => k.includes(wardName) || wardName.includes(k));
                 if (key) targetLayer = wardLayers[key];
             }
@@ -955,8 +947,6 @@
                         fillOpacity: 0.6
                     });
                 }, 2000);
-            } else {
-                console.warn('Ward not found on map:', wardName);
             }
         };
 
@@ -965,15 +955,16 @@
             ['overview', 'zone', 'policy', 'enforcement'].forEach(id => {
                 const btn = document.getElementById('tab-' + id);
                 const content = document.getElementById('content-' + id);
-
-                if (id === tabId) {
-                    btn.classList.remove('tab-inactive');
-                    btn.classList.add('tab-active');
-                    content.classList.remove('hidden');
-                } else {
-                    btn.classList.add('tab-inactive');
-                    btn.classList.remove('tab-active');
-                    content.classList.add('hidden');
+                if (btn && content) {
+                    if (id === tabId) {
+                        btn.classList.remove('tab-inactive');
+                        btn.classList.add('tab-active');
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.classList.add('tab-inactive');
+                        btn.classList.remove('tab-active');
+                        content.classList.add('hidden');
+                    }
                 }
             });
         }
@@ -982,10 +973,9 @@
         function exportPDF() {
             const element = document.getElementById('pdf-report');
             const dateEl = document.getElementById('pdf-date');
-            dateEl.innerText = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            if (dateEl) dateEl.innerText = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
             element.classList.remove('hidden');
-
             const opt = {
                 margin: 10,
                 filename: 'executive_strategy_brief.pdf',

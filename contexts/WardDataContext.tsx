@@ -37,8 +37,8 @@ export const WardDataProvider: React.FC<{ children: ReactNode }> = ({ children }
     // Initial fetch
     refreshWards();
     
-    // Auto-refresh every 15 minutes
-    const interval = setInterval(refreshWards, 15 * 60 * 1000);
+    // Auto-refresh every 2 minutes for high-fidelity presentation
+    const interval = setInterval(refreshWards, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 

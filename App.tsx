@@ -104,7 +104,20 @@ const AppContent: React.FC = () => {
 
   const handleAuthorityRoleSelection = (role: AuthorityRole) => {
     setAuthorityRole(role);
-    setViewMode(ViewMode.AUTHORITY_DASHBOARD);
+    
+    // Link to the old authority hub views
+    const roleMap: Record<string, string> = {
+      'ANALYTICS': '/authority/analytics/code.html',
+      'EXECUTIVE': '/authority/executive/code.html',
+      'FIELD': '/authority/field/code.html',
+      'OPERATIONAL': '/authority/operational/code.html'
+    };
+    
+    if (role && roleMap[role]) {
+      window.open(roleMap[role], '_blank');
+    } else {
+      setViewMode(ViewMode.AUTHORITY_DASHBOARD);
+    }
   };
 
   const handleSignOut = () => {

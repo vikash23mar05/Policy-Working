@@ -187,7 +187,7 @@
                             <div class="space-y-1">
                                 <p class="text-xs text-white/60 font-medium uppercase tracking-widest">
                                     Sensor-to-Estimate Ratio</p>
-                                <p id="metrics-ratio" class="text-3xl font-display font-bold text-white tracking-tighter">1:4.2</p>
+                                <p class="text-3xl font-display font-bold text-white tracking-tighter">1:4.2</p>
                                 <p class="text-xs text-accent-lime flex items-center gap-1 font-bold">
                                     <span class="material-symbols-outlined text-sm">trending_up</span>
                                     +0.2%
@@ -209,7 +209,7 @@
                                 <div>
                                     <p class="text-xs text-white/60 font-medium uppercase tracking-widest">Network
                                         Uptime</p>
-                                    <p id="metrics-uptime" class="text-3xl font-display font-bold text-white tracking-tighter">99.98%</p>
+                                    <p class="text-3xl font-display font-bold text-white tracking-tighter">99.98%</p>
                                 </div>
                                 <span
                                     class="px-2 py-0.5 bg-accent-lime/10 text-accent-lime text-[10px] font-bold rounded border border-accent-lime/20 uppercase">Stable</span>
@@ -229,7 +229,7 @@
                         <div class="bg-surface-dark p-6 rounded-lg border border-border-dark relative overflow-hidden">
                             <div class="space-y-1">
                                 <p class="text-xs text-white/60 font-medium uppercase tracking-widest">Anomaly Count</p>
-                                <p id="metrics-anomalies" class="text-3xl font-display font-bold text-white tracking-tighter">12 <span
+                                <p class="text-3xl font-display font-bold text-white tracking-tighter">12 <span
                                         class="text-sm font-normal text-white/40 uppercase">Detected</span></p>
                                 <p class="text-xs text-accent-orange flex items-center gap-1 font-bold">
                                     <span class="material-symbols-outlined text-sm">priority_high</span>
@@ -655,32 +655,48 @@
         </div>
     </div>
 
+    <script src="../authority-sync.js"></script>
     <script>
-        // Preloader Removed
+        // Real-time Data Sync Integration
+        window.onAuthorityDataUpdate = function(wards) {
+            console.log('📊 Updating Analytics Dashboard with real-time ward data');
+            const stats = AuthoritySync.getStats();
+            
+            // Update Top KPIs
+            document.querySelector('.text-3xl.font-display.font-bold.text-white[tracking-tighter]').innerText = 
+                `1:${(wards.filter(w => w.dataSource === 'estimated').length / Math.max(1, wards.filter(w => w.dataSource === 'sensor').length)).toFixed(1)}`;
+            
+            // Anomaly count (wards with severe/critical status)
+            const anomalyCount = wards.filter(w => w.status === 'SEVERE' || w.status === 'CRITICAL').length;
+            const kpiCards = document.querySelectorAll('.bg-surface-dark.p-6.rounded-lg.border.border-border-dark');
+            if (kpiCards[2]) {
+              kpiCards[2].querySelector('.text-3xl').innerHTML = `${anomalyCount} <span class="text-sm font-normal text-white/40 uppercase">Detected</span>`;
+              kpiCards[2].querySelector('.text-accent-orange').innerHTML = `<span class="material-symbols-outlined text-sm">priority_high</span> Critical: ${wards.filter(w => w.status === 'CRITICAL').length.toString().padStart(2, '0')}`;
+            }
+
+            // Refresh Map if it exists
+            if (map && wardGeoLayer) {
+                wardGeoLayer.setStyle((feature) => {
+                    const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
+                    const aqi = wardData ? wardData.aqi : 150;
+                    const color = AuthoritySync.getAQIColor(aqi);
+                    feature.properties.aqi = aqi;
+                    return {
+                        fillColor: color,
+                        weight: 1,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '3',
+                        fillOpacity: 0.6
+                    };
+                });
+            }
+        };
 
         // Map Initialization
-        function syncAnalyticsData() {
-            const sharedData = JSON.parse(localStorage.getItem('shared_ward_data') || '[]');
-            if (!sharedData.length) return;
-
-            const totalWards = sharedData.length;
-            const physicalSensors = sharedData.filter(w => w.dataSource === 'sensor').length;
-            const virtualSensors = totalWards - physicalSensors;
-            const ratio = (virtualSensors / Math.max(1, physicalSensors)).toFixed(1);
-
-            document.getElementById('metrics-ratio').innerText = `1:${ratio}`;
-            
-            // Randomize uptime and anomalies slightly to look live
-            const uptime = (99.8 + Math.random() * 0.2).toFixed(2);
-            document.getElementById('metrics-uptime').innerText = `${uptime}%`;
-
-            const anomalies = Math.floor(8 + Math.random() * 10);
-            document.getElementById('metrics-anomalies').innerHTML = `${anomalies} <span class="text-sm font-normal text-white/40 uppercase">Detected</span>`;
-        }
-
         let map;
+        let wardGeoLayer;
         document.addEventListener('DOMContentLoaded', () => {
-            syncAnalyticsData();
             map = L.map('map-container', {
                 zoomControl: false,
                 attributionControl: false
@@ -694,24 +710,12 @@
             fetch('/delhi_wards.geojson')
                 .then(response => response.json())
                 .then(data => {
-                    L.geoJSON(data, {
+                    wardGeoLayer = L.geoJSON(data, {
                         style: (feature) => {
-                            // Use shared ward data from localStorage
-                            const sharedData = JSON.parse(localStorage.getItem('shared_ward_data') || '[]');
-                            const props = feature.properties || {};
-                            const wardName = (props.Ward_Name || props.name || props.Ward || '').toUpperCase();
-                            const wardInfo = sharedData.find(w => w.name.toUpperCase() === wardName);
-                            
-                            const aqi = wardInfo ? wardInfo.aqi : Math.floor(Math.random() * 100 + 150); // Fallback if not found
-                            let color = '#00b050'; // Good
-                            if (aqi > 50) color = '#ffff00'; // Satisfactory
-                            if (aqi > 100) color = '#ff7f00'; // Moderate
-                            if (aqi > 200) color = '#ff0000'; // Poor
-                            if (aqi > 300) color = '#8b0000'; // Severe
-
+                            const wardData = AuthoritySync.getWard(feature.properties.Ward_Name);
+                            const aqi = wardData ? wardData.aqi : 150;
+                            const color = AuthoritySync.getAQIColor(aqi);
                             feature.properties.aqi = aqi;
-                            feature.properties.dataConfidence = wardInfo ? wardInfo.dataConfidence : 'Medium';
-                            feature.properties.dataSource = wardInfo ? wardInfo.dataSource : 'estimated';
 
                             return {
                                 fillColor: color,
@@ -738,7 +742,7 @@
                                 const tooltipName = document.getElementById('tooltip-name');
                                 const tooltipAqi = document.getElementById('tooltip-aqi');
 
-                                tooltipName.innerText = feature.properties.Ward_Name || 'Unknown Ward';
+                                tooltipName.innerText = feature.properties.Ward_Name || feature.properties.name || 'Unknown Ward';
                                 tooltipAqi.innerText = feature.properties.aqi || '--';
                                 tooltip.classList.remove('hidden');
                             });
@@ -750,15 +754,12 @@
                             });
 
                             layer.on('mouseout', function (e) {
-                                // Reset Style
                                 e.target.setStyle({
                                     weight: 1,
                                     color: 'white',
                                     dashArray: '3',
                                     fillOpacity: 0.6
                                 });
-
-                                // Hide Tooltip
                                 document.getElementById('map-tooltip').classList.add('hidden');
                             });
 
