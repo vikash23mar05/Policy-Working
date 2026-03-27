@@ -22,6 +22,7 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [liveComplaints, setLiveComplaints] = useState<Complaint[]>(MOCK_COMPLAINTS);
   const [complaintFilter, setComplaintFilter] = useState<string>('All');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile drawer state
 
   // AI Attribution state
   const [attribution, setAttribution] = useState<{
@@ -307,14 +308,20 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
     <div className="fixed inset-0 bg-zinc-100 dark:bg-zinc-950 flex flex-col overflow-hidden z-[100] font-sans">
 
       {/* ── TOP BAR ── */}
-      <header className="h-14 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-6 shrink-0 z-50">
-        <div className="flex items-center gap-6">
+      <header className="h-14 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between px-4 lg:px-6 shrink-0 z-40 relative">
+        <div className="flex items-center gap-4 lg:gap-6">
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="lg:hidden p-1.5 -ml-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-md"
+          >
+            <span className="material-symbols-outlined">{isSidebarOpen ? 'close' : 'menu'}</span>
+          </button>
           <div className="flex items-center gap-2">
-            <div className="size-7 bg-orange-500 rounded flex items-center justify-center">
+            <div className="size-7 bg-orange-500 rounded flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-white text-sm">air</span>
             </div>
-            <span className="font-bold text-sm text-zinc-900 dark:text-white tracking-tight">Delhi AQI Control</span>
-            <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded font-mono">AUTHORITY</span>
+            <span className="font-bold text-[13px] lg:text-sm text-zinc-900 dark:text-white tracking-tight leading-tight hidden sm:block">Delhi AQI Control</span>
+            <span className="text-[9px] lg:text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-1.5 py-0.5 rounded font-mono shrink-0">HQ</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
             <span>{formatDate(currentTime)}</span>
@@ -342,19 +349,27 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={onSignOut} className="flex items-center gap-1.5 text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+            <button onClick={onSignOut} className="flex items-center gap-1.5 text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors px-2 lg:px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 sm:w-auto">
               <span className="material-symbols-outlined text-sm">logout</span>
-              Sign out
+              <span className="hidden sm:inline">Sign out</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* ── MAIN BODY ── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
+
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div 
+            className="absolute inset-0 bg-black/50 z-20 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+        )}
 
         {/* ── LEFT SIDEBAR: Ward selector ── */}
-        <aside className="w-72 shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden">
+        <aside className={`absolute z-30 lg:relative inset-y-0 left-0 w-72 shrink-0 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
           <div className="p-4 border-b border-zinc-100 dark:border-zinc-800">
             <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-1">Priority Queue</p>
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -365,7 +380,10 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
             {sortedWards.map((w) => (
               <button
                 key={w.id}
-                onClick={() => setSelectedWardId(w.id)}
+                onClick={() => {
+                  setSelectedWardId(w.id);
+                  setIsSidebarOpen(false); // Close mobile menu after selection
+                }}
                 className={`w-full text-left px-4 py-3 border-b border-zinc-100 dark:border-zinc-800/50 transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
                   selectedWardId === w.id ? 'bg-orange-50 dark:bg-orange-500/10 border-l-2 border-l-orange-500' : ''
                 }`}
@@ -396,25 +414,25 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
         <div className="flex-1 flex flex-col overflow-hidden">
 
           {/* Tab bar + selected ward info */}
-          <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 flex items-center justify-between shrink-0">
-            <div className="flex">
+          <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-2 lg:px-6 flex items-center justify-between shrink-0">
+            <div className="flex overflow-x-auto hide-scrollbar">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3.5 text-[12px] font-semibold border-b-2 transition-all ${
+                  className={`flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-3.5 text-[11px] lg:text-[12px] font-semibold border-b-2 transition-all shrink-0 ${
                     activeTab === tab.id
                       ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                       : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                  <span className="material-symbols-outlined text-[14px] lg:text-[16px]">{tab.icon}</span>
                   {tab.label}
                 </button>
               ))}
             </div>
             {/* Selected ward badge */}
-            <div className="flex items-center gap-3 text-[11px]">
+            <div className="hidden lg:flex items-center gap-3 text-[11px]">
               <span className="text-zinc-400">Viewing:</span>
               <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${statusColor(selectedWard.status)}`}>{selectedWard.status}</span>
               <span className="font-semibold text-zinc-800 dark:text-zinc-200">{selectedWard.name}</span>
@@ -427,9 +445,9 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
 
             {/* ════ TAB 1: LIVE MAP ════ */}
             {activeTab === 'MAP' && (
-              <div className="h-full flex gap-0 overflow-hidden">
+              <div className="h-full flex flex-col lg:flex-row gap-0 overflow-hidden relative">
                 {/* Map — clicking a ward polygon updates the right panel */}
-                <div className="flex-1 relative">
+                <div className="flex-1 relative min-h-[50svh]">
                   <LeafletAQIMap
                     showChrome={false}
                     wardData={displayWards}
@@ -446,10 +464,13 @@ const AuthorityDashboard: React.FC<AuthorityDashboardProps> = ({ onNavigateMap, 
                 </div>
 
                 {/* Ward detail panel */}
-                <div className="w-80 shrink-0 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-y-auto">
-                  <div className="p-5 border-b border-zinc-100 dark:border-zinc-800">
-                    <h2 className="font-bold text-sm text-zinc-900 dark:text-white">{selectedWard.name}</h2>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">Last updated: {selectedWard.lastUpdated || 'Recently'}</p>
+                <div className="w-full lg:w-80 shrink-0 bg-white dark:bg-zinc-900 border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-y-auto max-h-[50svh] lg:max-h-none shadow-[0_-10px_30px_rgba(0,0,0,0.5)] lg:shadow-none z-10">
+                  <div className="p-4 lg:p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center sticky top-0 bg-white dark:bg-zinc-900 z-20">
+                    <div>
+                      <h2 className="font-bold text-sm text-zinc-900 dark:text-white">{selectedWard.name}</h2>
+                      <p className="text-[11px] text-zinc-500 mt-0.5">Last updated: {selectedWard.lastUpdated || 'Recently'}</p>
+                    </div>
+                    <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${statusColor(selectedWard.status)} lg:hidden`}>{selectedWard.status}</span>
                   </div>
 
                   {/* AQI Big Number */}

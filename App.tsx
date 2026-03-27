@@ -43,7 +43,7 @@ const App: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LANDING);
-  const [showAgent, setShowAgent] = useState(true);
+  const [showAgent, setShowAgent] = useState(false);
 
   const handleRoleSelection = (role: UserRole) => {
     if (role === 'AUTHORITY') {
